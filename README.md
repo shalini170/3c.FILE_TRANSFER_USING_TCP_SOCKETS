@@ -12,71 +12,54 @@ To write a python program for creating File Transfer using TCP Sockets Links
 4. Open the file and then send it to the client in byte format.
 5. In the client side receive the file from server and then write the content into it.
 ## PROGRAM
+client
 ```
-Server:
 import socket
+s=socket.socket()
+host=socket.gethostname()
+port=60000
+s.connect((host,port))
+s.send("Hello server!".encode())
+with open('received_file','wb')as f:
+  print('receiving data....')
+  while True:
+    data=s.recv(1024)
+    print('data=%s',data)
+    if not data:
+       break
+    f.write(data)
+print('Successfully received the file')
+s.close()
+print('connection closed')
 
-def send_file(filename, client_socket):
-    with open(filename, 'rb') as file:
-        for data in file:
-            client_socket.sendall(data)
+server
 
-def start_server():
-    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server_socket.bind(('127.0.0.1', 5555))
-    server_socket.listen(5)
-    print("Server started, listening on port 5555")
-
-    while True:
-        client_socket, addr = server_socket.accept()
-        print(f"Accepted connection from {addr}")
-
-        filename = input("Enter filename to send: ")
-        try:
-            send_file(filename, client_socket)
-            print(f"File '{filename}' sent successfully")
-        except FileNotFoundError:
-            print(f"File '{filename}' not found")
-
-        client_socket.close()
-
-start_server()
-
-Client:
 import socket
-
-def receive_file(filename, server_socket):
-    with open(filename, 'wb') as file:
-        while True:
-            data = server_socket.recv(1024)
-            if not data:
-                break
-            file.write(data)
-
-def start_client():
-    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client_socket.connect(('127.0.0.1', 5555))
-
-    filename = input("Enter filename to save: ")
-    client_socket.sendall(filename.encode())
-
-    receive_file(filename, client_socket)
-    print(f"File '{filename}' received successfully")
-
-    client_socket.close()
-
-start_client()
+port=60000
+s=socket.socket()
+host=socket.gethostname()
+s.bind((host,port))
+s.listen(5)
+print("Server listening on port",port)
+while True:
+  conn,addr=s.accept()
+  print("Connected to",addr)
+  data=conn.recv(1024)
+  print('Server received',repr(data))
+  filename = 'C:\\Users\\admin\\Desktop\\COLLEGE\\COM NETWORKS\\CN exp.txt'
+  with open(filename,'rb') as f:
+   l=f.read(1024)
+   while l:
+     conn.send(l)
+     print('sent',repr(l))
+     l=f.read(1024)
+print("Done sending")
+conn.send('Thank you for connecting'.encode())
+conn.close()
 ```
 ## OUPUT
 
-server:
-
-![image](https://github.com/shalini170/3c.FILE_TRANSFER_USING_TCP_SOCKETS/assets/151901983/66accf06-01d3-431d-a7b2-e8931cd24d68)
-
-
-client:
-
-![image](https://github.com/shalini170/3c.FILE_TRANSFER_USING_TCP_SOCKETS/assets/151901983/829c63d9-3ef8-4ad0-859c-2f61fbc47b0b)
+![Screenshot 2024-10-18 075628](https://github.com/user-attachments/assets/8eb390d2-4756-48c6-9a97-17e7de25e8e6)
 
 ## RESULT
 Thus, the python program for creating File Transfer using TCP Sockets Links was 
